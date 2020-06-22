@@ -25,6 +25,7 @@ Jörmungandr does not aim to save completed functioning mods, rather simply City
 # Known Bugs
 - Maps can be slow to render when changing zoom (particularly when far out)
 - City names do not initially render when using the magnifying glass zoom function (scroll zoom works fine)
+
 (In short, matplotlib was definitely not designed for the kind of dynamic graphical heavy lifting I am using it for)
 
 # Planned Features
