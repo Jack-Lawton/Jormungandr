@@ -33,7 +33,13 @@ class PopupWindow(object):
         self.value = default_name
         self.radius = default_radius
 
-    def cleanup(self):
+        self.top.bind("<Return>", self.cleanup)
+
+        master.focus_force()
+        self.e.focus()
+
+    def cleanup(self, *args):
+        self.top.unbind("<Return>")
         self.value = self.e.get()
         self.radius = self.radius_var.get()
         self.top.destroy()
@@ -50,7 +56,13 @@ class WarningWindow(object):
         self.b2.pack()
         self.accepted = False
 
-    def ok(self):
+        self.top.bind("<Return>", self.ok)
+
+        self.b1.focus()
+        master.focus_force()
+
+    def ok(self, *args):
+        self.top.unbind("<Return>")
         self.accepted = True
         self.cleanup()
 
@@ -66,7 +78,12 @@ class MessageWindow(object):
         self.b1 = Button(top, text='Ok', command=self.cleanup)
         self.b1.pack()
 
-    def cleanup(self):
+        self.top.bind("<Return>", self.cleanup)
+
+        self.b1.focus()
+        master.focus_force()
+
+    def cleanup(self, *args):
         self.top.destroy()
 
 
