@@ -23,6 +23,8 @@ Before saving, on the main menu, two options are available:
 Jörmungandr does not aim to save completed functioning mods, rather simply CityMap.xml and GamePlayText.xml files, the most time consuming to create. Where possible Jörmungandr will reuse existing GamePlayText mappings and for new cities, will create its own, always preceded by "LOC_JORMUNGANDR_CITY_NAME_" to prevent any conflicts. All produced GamePlayText will be in English (US) only.
 
 # Known Bugs
+- Exe build can be slow to load (recommended to run the python direct where possible)
+- Initial directory browser does not appear on the Windows taskbar
 - Maps can be slow to render when changing zoom (particularly when far out)
 - City names do not initially render when using the magnifying glass zoom function (scroll zoom works fine)
 
