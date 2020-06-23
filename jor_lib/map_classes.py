@@ -90,6 +90,9 @@ class Tile:
         else:
             return (self.value[0] == 16) or (self.value[0] == 15)
 
+    def is_ocean(self):
+        return (self.value[0] == "TERRAIN_OCEAN") or (self.value[0] == 16)
+
     def remove(self):
         for ref in self.references:
             ref.remove()
