@@ -48,16 +48,14 @@ class MapWindow:
                     self.wait_popup = True
                     self.select_function(matched_hex)
                     self.wait_popup = False
-                    self.redraw(None)
+                    self.redraw(None, tile_x=matched_hex.x, tile_y=matched_hex.y)
                     self.ax.figure.canvas.draw()
-            elif event.button == 2:
-                print("scroll click")
-            elif event.button == 3:
-                print("right click")
             else:
-                pass
+                # Zoom or drag, please redraw
+                self.redraw(None)
+                self.ax.figure.canvas.draw()
 
-    def redraw(self, event):
+    def redraw(self, event, tile_x=None, tile_y=None):
         # Capture axis limits
         xlim = self.ax.get_xlim()
         ylim = self.ax.get_ylim()
@@ -73,13 +71,19 @@ class MapWindow:
         pixel_width = bbox.width * self.ax.figure.dpi
         fontsize = (pixel_width / tile_width) / 8
 
-        # clear
-        self.ax.cla()
-        for x in range(x_start+1, x_end+1):
-            if x in self.tile_dict:
-                for y in range(y_start+1, y_end+1):
-                    if y in self.tile_dict[x]:
-                        self.tile_dict[x][y].plot(self.ax, fontsize=fontsize, civilization=self.civilization)
+        if tile_x is not None:
+            # If coordinates are provided, replot just this cell
+            if (tile_x in self.tile_dict) and (tile_y in self.tile_dict[tile_x]):
+                self.tile_dict[tile_x][tile_y].remove()
+                self.tile_dict[tile_x][tile_y].plot(self.ax, fontsize=fontsize, civilization=self.civilization)
+        else:
+            # Otherwise clear all and plot again
+            self.ax.cla()
+            for x in range(x_start+1, x_end+1):
+                if x in self.tile_dict:
+                    for y in range(y_start+1, y_end+1):
+                        if y in self.tile_dict[x]:
+                            self.tile_dict[x][y].plot(self.ax, fontsize=fontsize, civilization=self.civilization)
         # Resize
         self.ax.set_xlim(xlim)
         self.ax.set_ylim(ylim)
@@ -144,7 +148,6 @@ class MapWindow:
         # Register events
         fig.canvas.mpl_connect('button_press_event', self.onclick)
         fig.canvas.mpl_connect('button_release_event', self.onrelease)
-        fig.canvas.mpl_connect('draw_event', self.redraw)
         fig.canvas.mpl_connect('home_event', self.home)
         fig.canvas.mpl_connect('back_event', self.redraw)
         fig.canvas.mpl_connect('forward_event', self.redraw)
