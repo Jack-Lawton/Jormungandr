@@ -1,5 +1,6 @@
 
 import os
+import string
 
 import unidecode
 
@@ -30,9 +31,11 @@ CITY_STRUCTURE = """
 </GameData>
 """
 
+PUNCTUATION_TRANSLATOR = str.maketrans(string.punctuation, '_'*len(string.punctuation))
+
 
 def generate_unique_city_code(city_name, city_names_inverse_original, city_names_inverse_to_save):
-    clean_name = unidecode.unidecode(city_name).upper().replace(" ", "_")
+    clean_name = unidecode.unidecode(city_name).upper().replace(" ", "_").translate(PUNCTUATION_TRANSLATOR)
     code = "LOC_JORMUNGANDR_CITY_NAME_" + clean_name
     # Check our code is not already used
     if (code not in city_names_inverse_original) \
