@@ -10,9 +10,14 @@ from jor_lib.output import save_map
 
 
 class PopupWindow(object):
-    def __init__(self, master, default_name="", default_radius=0):
+    def __init__(self, master, default_name="", default_radius=0, x=None, y=None):
         top = self.top = Toplevel(master)
-        self.l = Label(top, text="City Name")
+
+        label_text = "City Name"
+        if (x is not None) and (y is not None):
+            label_text += " ({}, {})".format(x, y)
+
+        self.l = Label(top, text=label_text)
         self.l.pack()
         self.e = Entry(top)
         self.e.insert(0, default_name)
@@ -151,7 +156,8 @@ class MainWindow(object):
         else:
             default_name = ""
             default_radius = 0
-        w = PopupWindow(self.master, default_name=default_name, default_radius=default_radius)
+        w = PopupWindow(self.master, default_name=default_name, default_radius=default_radius,
+                        x=tile.x, y=tile.y)
         self.master.wait_window(w.top)
         if w.value != "":
             is_update = (w.value != default_name) or (w.radius != default_radius)
