@@ -1,6 +1,7 @@
 
 import os
 import re
+import traceback
 
 import xmltodict
 
@@ -109,6 +110,7 @@ def loop_map_directory(dir_, tile_dict):
                 my_xml = xmltodict.parse(f.read())
             except:
                 print("Warning, {} malformed.".format(name))
+                traceback.print_exc()
                 # Ignore malformed xml (for now)
                 continue
             if ("GameData" in my_xml) and (my_xml["GameData"] is not None):
