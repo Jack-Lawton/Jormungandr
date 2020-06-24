@@ -116,11 +116,23 @@ class MapWindow:
             # deal with something that should never happen
             scale_factor = 1
             print(event.button)
+        # Calculate new limits
+        xmin = xdata - cur_xrange * scale_factor
+        xmax = xdata + cur_xrange * scale_factor
+        if xmin < -1:
+            xmin = -1
+        if xmax > len(self.tile_dict):
+            xmax = len(self.tile_dict)
+        ymin = ydata - cur_yrange * scale_factor
+        ymax = ydata + cur_yrange * scale_factor
+        if ymin < -1:
+            ymin = -1
+        if ymax > len(self.tile_dict[0]):
+            ymax = len(self.tile_dict[0])
+
         # set new limits
-        self.ax.set_xlim([xdata - cur_xrange * scale_factor,
-                          xdata + cur_xrange * scale_factor])
-        self.ax.set_ylim([ydata - cur_yrange * scale_factor,
-                          ydata + cur_yrange * scale_factor])
+        self.ax.set_xlim([xmin, xmax])
+        self.ax.set_ylim([ymin, ymax])
         self.redraw(None)
         self.ax.figure.canvas.draw()
 
