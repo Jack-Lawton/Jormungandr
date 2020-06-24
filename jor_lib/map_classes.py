@@ -130,7 +130,11 @@ class Tile:
     def add_name(self, text, civilization="None", area=0, is_update=False):
         self.names[civilization] = text
         self.areas[civilization] = area
-        self.is_update[civilization] = is_update
+        if civilization in self.is_update:
+            if not self.is_update[civilization]:
+                self.is_update[civilization] = is_update
+        else:
+            self.is_update[civilization] = is_update
 
     def remove_name(self, civilization="None"):
         del self.names[civilization]
