@@ -11,8 +11,7 @@ CITY_XML = "<Replace MapName=\"{}\" X=\"{}\" Y=\"{}\" CityLocaleName=\"{}\" Area
 TEXT_XML = "<Replace Tag=\"{}\" Text=\"{}\" Language=\"en_US\" />"
 COMMENT_XML = "<!-- {} -->"
 
-TEXT_STRUCTURE = """
-<?xml version="1.0" encoding="utf-8"?>
+TEXT_STRUCTURE = """<?xml version="1.0" encoding="utf-8"?>
 <GameData>
 \t<LocalizedText>
 \t\t<!-- Localized Text Automatically Produced by Jörmungandr True Location GUI for YnAMP -->
@@ -21,13 +20,12 @@ TEXT_STRUCTURE = """
 </GameData>
 """
 
-CITY_STRUCTURE = """
-<?xml version="1.0" encoding="utf-8"?>
+CITY_STRUCTURE = """<?xml version="1.0" encoding="utf-8"?>
 <GameData>
 \t<CityMap>
 \t\t<!-- City Map Automatically Produced by Jörmungandr True Location GUI for YnAMP -->
 \t\t{}
-\t</LocalizedText>
+\t</CityMap>
 </GameData>
 """
 
