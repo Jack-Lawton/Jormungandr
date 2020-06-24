@@ -21,7 +21,6 @@ class MapWindow:
         self.select_function = select_function
         self.ax = None  # To be defined later
         self.wait_popup = False
-        self.active_tiles = []
 
     def onclick(self, event):
         self.ax.time_onclick = time.time()
@@ -79,14 +78,19 @@ class MapWindow:
                 self.tile_dict[tile_x][tile_y].plot(self.ax, fontsize=fontsize, civilization=self.civilization)
         else:
             # Otherwise clear all and plot again
-            while len(self.active_tiles) > 0:
-                self.active_tiles.pop().remove()
-            for x in range(x_start+1, x_end+1):
-                if x in self.tile_dict:
-                    for y in range(y_start+1, y_end+1):
-                        if y in self.tile_dict[x]:
-                            self.tile_dict[x][y].plot(self.ax, fontsize=fontsize, civilization=self.civilization)
-                            self.active_tiles.append(self.tile_dict[x][y])
+            for x, column in self.tile_dict.items():
+                for y, tile in column.items():
+                    # Always clear text
+                    tile.remove("text")
+                    # Clear circles if the zoom is too low
+                    if fontsize < 1:
+                        tile.remove("ring")
+                    # Clear rivers if the zoom is too low
+                    if fontsize < 2:
+                        tile.remove("rivers")
+                    # If in range, plot the new data
+                    if (x > x_start) and (x <= x_end) and (y > y_start) and (y <= y_end):
+                        self.tile_dict[x][y].plot(self.ax, fontsize=fontsize, civilization=self.civilization)
         # Resize
         self.ax.set_xlim(xlim)
         self.ax.set_ylim(ylim)

@@ -8,7 +8,12 @@ class Tile:
         self.y = y
         self.value = value
         self.poly = hd.get_hex(x, y)
-        self.references = []
+        self.references = {
+            "hex": [],
+            "rivers": [],
+            "text": [],
+            "ring": []
+        }
         self.names = {}
         self.areas = {}
         self.is_update = {}
@@ -16,10 +21,11 @@ class Tile:
 
     def plot(self, ax, fontsize=0, civilization="None"):
         # Add hex
-        self.references.append(ax.add_patch(hd.get_patch(self.poly, self.value, self.natural_wonder)))
+        if not self.has_references("hex"):
+            self.references["hex"].append(ax.add_patch(hd.get_patch(self.poly, self.value, self.natural_wonder)))
 
         # Add finer details only at sufficient zoom
-        if fontsize > 2:
+        if (fontsize > 2) and (not self.has_references("rivers")):
             # Add rivers
             # For logic reference, see https://github.com/Zobtzler/YnABMC/blob/master/YnABMC/Form1.cs (line 731)
             rivers = self.value[3]
@@ -32,7 +38,7 @@ class Tile:
                 river_edges.append("se")
             for edge in river_edges:
                 rx, ry = hd.get_edge_xy(self.x, self.y, edge)
-                self.references += ax.plot(rx, ry, "b-")
+                self.references["rivers"] += ax.plot(rx, ry, "b-")
 
             # Add cliffs (same reference as rivers, line 796)
             cliffs = self.value[5]
@@ -45,10 +51,12 @@ class Tile:
                 cliff_edges.append("se")
             for edge in cliff_edges:
                 rx, ry = hd.get_edge_xy(self.x, self.y, edge)
-                self.references += ax.plot(rx, ry, "k-")
+                self.references["rivers"] += ax.plot(rx, ry, "k-")
 
+        # Only plot text and rings if a valid civ exists
         if civilization in self.names:
-            if fontsize > 2:
+            # Can we plot text?
+            if (fontsize > 2) and (not self.has_references("text")):
                 # We can plot city names
                 offset = (self.y % 2) * 0.5
                 # Work out how much to show at this level
@@ -65,8 +73,9 @@ class Tile:
 
                 text_ref = ax.text(self.x + offset, self.y, text,
                                    horizontalalignment='center', verticalalignment='center', fontsize=fontsize)
-                self.references.append(text_ref)
-            if fontsize > 1:
+                self.references["text"].append(text_ref)
+            # Can we plot rings?
+            if (fontsize > 1) and (not self.has_references("ring")):
                 # We can plot circles
                 cx, cy = hd.get_circle_xy(self.x, self.y, self.areas[civilization])
                 # Get style
@@ -76,7 +85,7 @@ class Tile:
                     style = "r-"
 
                 circle_ref = ax.plot(cx, cy, style)
-                self.references += circle_ref
+                self.references["ring"] += circle_ref
 
     def is_mountain(self):
         if isinstance(self.value[0], str):
@@ -93,10 +102,30 @@ class Tile:
     def is_ocean(self):
         return (self.value[0] == "TERRAIN_OCEAN") or (self.value[0] == 16)
 
-    def remove(self):
-        for ref in self.references:
-            ref.remove()
-        self.references = []
+    def has_references(self, reference_type=None):
+        if reference_type is None:
+            for rt in self.references.keys():
+                if self.has_references(rt):
+                    return True
+            # If we get here, there are no references
+            return False
+        elif reference_type not in self.references:
+            # Invalid reference type
+            return False
+        else:
+            # We have a specific reference type to consider, check the length
+            return len(self.references[reference_type]) != 0
+
+    def remove(self, reference_type=None):
+        # If no reference type specified, remove all
+        if reference_type is None:
+            for rt in self.references.keys():
+                self.remove(rt)
+        elif reference_type in self.references:
+            # Otherwise, remove the specific one
+            for ref in self.references[reference_type]:
+                ref.remove()
+            self.references[reference_type] = []
 
     def add_name(self, text, civilization="None", area=0, is_update=False):
         self.names[civilization] = text
