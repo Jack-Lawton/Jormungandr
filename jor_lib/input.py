@@ -126,7 +126,12 @@ def loop_map_directory(dir_, tile_dict):
     if (len(city_names_xml) == 0) and (dir_[-9:] != "Gameplay/"):
         # Assume this is the YnAMP folder structure - i.e. go up two directory levels then to "Gameplay"
         new_dir = "/".join(dir_.split("/")[:-3]) + "/Gameplay/"
-        map_name, city_names = loop_map_directory(new_dir, tile_dict)
+        if os.path.exists(new_dir):
+            # Provided the directory exists, use it
+            map_name, city_names = loop_map_directory(new_dir, tile_dict)
+        else:
+            # Otherwise, we will just have to live without city names
+            city_names = {}
     else:
         # We have files, read in as normal
         city_names = {}
@@ -144,7 +149,7 @@ def loop_map_directory(dir_, tile_dict):
         map_name = city_maps_xml[0]["GameData"]["CityMap"]["Replace"][0]["@MapName"]
     elif (len(city_maps_xml) > 0) and (len(city_maps_xml[0]["GameData"]["CityMap"][0]["Replace"]) > 0):
         map_name = city_maps_xml[0]["GameData"]["CityMap"][0]["Replace"][0]["@MapName"]
-    elif (len(wonders_xml) > 0) and not isinstance(city_maps_xml[0]["GameData"]["NaturalWonderPosition"], list) \
+    elif (len(wonders_xml) > 0) and not isinstance(wonders_xml[0]["GameData"]["NaturalWonderPosition"], list) \
             and (len(wonders_xml[0]["GameData"]["NaturalWonderPosition"]["Replace"]) > 0):
         map_name = wonders_xml[0]["GameData"]["NaturalWonderPosition"]["Replace"][0]["@MapName"]
     elif (len(wonders_xml) > 0) and (len(wonders_xml[0]["GameData"]["NaturalWonderPosition"][0]["Replace"]) > 0):
