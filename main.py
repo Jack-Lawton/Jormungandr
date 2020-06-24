@@ -4,7 +4,7 @@ import time
 from threading import Thread
 
 from tkinter import *
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 
 from jor_lib.gui import MainWindow
 from jor_lib.input import load_map
@@ -33,6 +33,15 @@ def launch_func(main):
 
 # Kick off launch function in new thread
 Thread(target=lambda: launch_func(root)).start()
+
+
+# Function to handle quit confirm
+def on_closing():
+    if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        root.destroy()
+
+
+root.protocol("WM_DELETE_WINDOW", on_closing)
 
 # Launch GUI
 root.mainloop()
