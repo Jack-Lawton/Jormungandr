@@ -172,6 +172,11 @@ class MapWindow:
         fig.canvas.mpl_connect('forward_event', self.redraw)
         fig.canvas.mpl_connect('scroll_event', self.zoom_fun)
 
+        # Clear all tiles
+        for x, column in self.tile_dict.items():
+            for y, tile in column.items():
+                tile.remove()
+
         # Call home first
         self.home(None)
 
