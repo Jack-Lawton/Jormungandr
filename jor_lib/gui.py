@@ -153,17 +153,20 @@ class MainWindow(object):
         if self.map.civilization in tile.names:
             default_name = tile.names[self.map.civilization]
             default_radius = tile.areas[self.map.civilization]
+        elif "None" in tile.names:
+            default_name = tile.names["None"]
+            default_radius = tile.areas["None"]
         else:
             default_name = ""
             default_radius = 0
         w = PopupWindow(self.master, default_name=default_name, default_radius=default_radius,
                         x=tile.x, y=tile.y)
         self.master.wait_window(w.top)
-        if w.value != "":
-            is_update = (w.value != default_name) or (w.radius != default_radius)
-            tile.add_name(w.value, civilization=self.map.civilization, area=w.radius, is_update=is_update)
-        elif default_name != "":
+        is_update = (w.value != default_name) or (w.radius != default_radius)
+        if w.value == "":
             tile.remove_name(self.map.civilization)
+        elif is_update:
+            tile.add_name(w.value, civilization=self.map.civilization, area=w.radius, is_update=is_update)
 
     def save(self):
         self.set_all_states("disabled")
