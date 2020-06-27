@@ -144,6 +144,8 @@ class Tile:
             self.is_update[civilization] = is_update
 
     def remove_name(self, civilization="None"):
-        del self.names[civilization]
-        del self.areas[civilization]
+        if civilization in self.names:
+            del self.names[civilization]
+        if civilization in self.areas:
+            del self.areas[civilization]
         self.is_update[civilization] = True
