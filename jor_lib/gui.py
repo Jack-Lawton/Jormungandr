@@ -212,6 +212,10 @@ class MainWindow(object):
             bl, tl = rosetta.load_rosetta("Rosetta_Localization.xml")
         else:
             path = filedialog.askopenfilename(filetypes=[("XML files", "*.xml")])
+            if path == "":
+                # Empty path, treat as cancellation
+                self.set_all_states("normal")
+                return None
             bl, tl = rosetta.load_rosetta(path)
         # Now apply
         n_changes = 0
