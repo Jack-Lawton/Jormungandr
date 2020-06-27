@@ -54,7 +54,19 @@ class Tile:
                 self.references["rivers"] += ax.plot(rx, ry, "k-")
 
         # Only plot text and rings if a valid civ exists
+        # This can be matching or for "None", set style as appropriate
         if civilization in self.names:
+            if self.is_update[civilization]:
+                style = "r-"
+            else:
+                style = "m-"
+        elif "None" in self.names:
+            style = "k:"
+            civilization = "None"
+        else:
+            style = None
+        # If a valid style is set, plot away
+        if style is not None:
             # Can we plot text?
             if (fontsize > 2) and (not self.has_references("text")):
                 # We can plot city names
@@ -78,11 +90,6 @@ class Tile:
             if (fontsize > 1) and (not self.has_references("ring")):
                 # We can plot circles
                 cx, cy = hd.get_circle_xy(self.x, self.y, self.areas[civilization])
-                # Get style
-                if not self.is_update[civilization]:
-                    style = "m-"
-                else:
-                    style = "r-"
 
                 circle_ref = ax.plot(cx, cy, style)
                 self.references["ring"] += circle_ref
