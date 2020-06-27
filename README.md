@@ -16,6 +16,8 @@ Currently Jörmungandr immediately prompts the user to select a directory. The f
 
 Once launched, the user can select a civilization, then view and edit their city map. The default selection is "None", i.e. all civilizations.
 
+As of v0.4.0, the user can also select "Apply Rosetta", this will prompt the user to select the Localisation.xml from the [Rosetta](https://forums.civfanatics.com/threads/rosetta-dynamic-city-names.623102/) mod (alternatively, creating a file called Rosetta_Localization.xml will skip this check). Jörmungandr will then use the Rosetta database to create city mappings for the slected civilization for all cities where the generic ("None") mapping can be found in Rosetta.
+
 Before saving, on the main menu, two options are available:
 - Save updates only. This is designed to aid in collaboration, any new cities added in a session are coloured slightly differently, choosing to save only updates will save only these cities. The new files can then be merged or re-used however is required.
 - Separate files for each civilization. By default Jörmungandr will aim to minimise the number of files produced by saving all civilizations together, however, these can be separates to better align with current YnAMP practice. Only civilizations with city mappings will have files created.
@@ -29,5 +31,4 @@ Jörmungandr does not aim to save completed functioning mods, rather simply City
 (In short, matplotlib was definitely not designed for the kind of dynamic graphical heavy lifting I am using it for)
 
 # Planned Features
-- Suggest civilization specific city names using names from the general (None) mapping.
-- Option to enable automatic generation of civilization specific city names using [Rosetta](https://forums.civfanatics.com/threads/rosetta-dynamic-city-names.623102/) (where available).
+- Join circles for adjacent tiles with the same city name.
