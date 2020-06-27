@@ -8,6 +8,7 @@ from jor_lib.jor_utils import all_civs_plus_none
 
 
 CITY_XML = "<Replace MapName=\"{}\" X=\"{}\" Y=\"{}\" CityLocaleName=\"{}\" Area=\"{}\" />"
+CITY_XML_CIV = "<Replace MapName=\"{}\" X=\"{}\" Y=\"{}\" CityLocaleName=\"{}\" Area=\"{}\" Civilization=\"{}\" />"
 TEXT_XML = "<Replace Tag=\"{}\" Text=\"{}\" Language=\"en_US\" />"
 COMMENT_XML = "<!-- {} -->"
 
@@ -87,7 +88,10 @@ def save_map(path, map_name, tile_dict, city_names, updates_only=False, separate
                             # Add code to the save file
                             city_names_inverse_to_save[city_name] = city_code
                         # Add xml
-                        my_xml = CITY_XML.format(map_name, tile.x, tile.y, city_code, city_area)
+                        if civilization == "None":
+                            my_xml = CITY_XML.format(map_name, tile.x, tile.y, city_code, city_area)
+                        else:
+                            my_xml = CITY_XML_CIV.format(map_name, tile.x, tile.y, city_code, city_area, civilization)
                         map_raw_xmls[civilization].append(my_xml)
     # Now produce the text file lines
     text_raw_xmls = [TEXT_XML.format(value, key) for key, value in city_names_inverse_to_save.items()]
