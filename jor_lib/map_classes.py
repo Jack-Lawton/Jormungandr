@@ -94,6 +94,12 @@ class Tile:
                 circle_ref = ax.plot(cx, cy, style)
                 self.references["ring"] += circle_ref
 
+                # If there is a generic civ with a different radius, plot the circle still
+                if ("None" in self.areas) and (self.areas["None"] != self.areas[civilization]):
+                    cx, cy = hd.get_circle_xy(self.x, self.y, self.areas["None"])
+                    circle_ref2 = ax.plot(cx, cy, "k:")
+                    self.references["ring"] += circle_ref2
+
     def is_mountain(self):
         if isinstance(self.value[0], str):
             return "MOUNTAIN" in self.value[0]
