@@ -14,12 +14,14 @@ from jor_lib.output import save_map
 
 
 class PopupWindow(object):
-    def __init__(self, master, default_name="", default_radius=0, x=None, y=None):
+    def __init__(self, master, default_name="", default_radius=0, x=None, y=None, tile_name=None):
         top = self.top = Toplevel(master)
 
         label_text = "City Name"
         if (x is not None) and (y is not None):
             label_text += " ({}, {})".format(x, y)
+        if tile_name is not None:
+            label_text += " ({})".format(tile_name)
 
         self.l = Label(top, text=label_text)
         self.l.pack()
@@ -167,8 +169,13 @@ class MainWindow(object):
         else:
             default_name = ""
             default_radius = 0
+        # Work out tile name (if applicable)
+        if (self.map.civilization != "None") and ("None" in tile.names) and (tile.names["None"] != default_name):
+            tile_name = tile.names["None"]
+        else:
+            tile_name = None
         w = PopupWindow(self.master, default_name=default_name, default_radius=default_radius,
-                        x=tile.x, y=tile.y)
+                        x=tile.x, y=tile.y, tile_name=tile_name)
         self.master.wait_window(w.top)
         is_update = (w.value != default_name) or (w.radius != default_radius)
         if w.value == "":
