@@ -1,4 +1,8 @@
 
+import os
+
+import jor_lib.rosetta as rosetta
+
 from tkinter import *
 from tkinter import filedialog
 
@@ -94,6 +98,7 @@ class MessageWindow(object):
 
 class MainWindow(object):
     def set_all_states(self, state):
+        self.rb["state"] = state
         self.b["state"] = state
         self.options["state"] = state
         self.check_1["state"] = state
@@ -120,6 +125,9 @@ class MainWindow(object):
         self.variable.set("None")
         self.options = OptionMenu(master, self.variable, *all_civs_plus_none)
         self.options.pack()
+
+        self.rb = Button(master, text="Apply Rosetta", command=self.apply_rosetta)
+        self.rb.pack()
 
         self.b = Button(master, text="Open Map", command=self.show_map)
         self.b.pack()
@@ -178,5 +186,37 @@ class MainWindow(object):
                  separate_civ_files=self.separate_files_var.get())
         # Let the user know we have saved
         w = MessageWindow(self.master, "File Saved!")
+        self.master.wait_window(w.top)
+        self.set_all_states("normal")
+
+    def apply_rosetta(self):
+        self.set_all_states("disabled")
+        civilization = self.variable.get()
+        if civilization == "None":
+            # Check the user is ok with not specifying a civ
+            w = WarningWindow(self.master, "You are about to apply Rosetta for ALL civilizations. Are you sure?")
+            self.master.wait_window(w.top)
+            if not w.accepted:
+                # We have canceled out of the operation
+                self.set_all_states("normal")
+                return None
+        # Next load the file
+        if os.path.exists("Rosetta_Localization.xml"):
+            bl, tl = rosetta.load_rosetta("Rosetta_Localization.xml")
+        else:
+            path = filedialog.askopenfilename(filetypes=[("XML files", "*.xml")])
+            bl, tl = rosetta.load_rosetta(path)
+        # Now apply
+        n_changes = 0
+        if civilization == "None":
+            # Apply rosetta to all
+            for loop_civ in all_civs_plus_none:
+                if loop_civ != "None":
+                    n_changes += rosetta.add_to_tile_dict(self.tile_dict, loop_civ, bl, tl)
+        else:
+            # Just one civ
+            n_changes += rosetta.add_to_tile_dict(self.tile_dict, civilization, bl, tl)
+        # Let the user know we have completed
+        w = MessageWindow(self.master, "Added {} New City Mappings!".format(n_changes))
         self.master.wait_window(w.top)
         self.set_all_states("normal")
