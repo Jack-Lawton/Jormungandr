@@ -7,7 +7,7 @@ from tkinter import *
 from tkinter import filedialog
 
 from jor_lib.map_window import MapWindow
-from jor_lib.jor_utils import all_civs_plus_none
+from jor_lib.jor_utils import all_civs_plus_none, all_civs
 from jor_lib.output import save_map
 
 # GUI stuff
@@ -102,6 +102,7 @@ class MainWindow(object):
     def set_all_states(self, state):
         self.c_ind["state"] = state
         self.rb["state"] = state
+        self.sb["state"] = state
         self.b["state"] = state
         self.options["state"] = state
         self.check_1["state"] = state
@@ -135,6 +136,9 @@ class MainWindow(object):
 
         self.rb = Button(master, text="Apply Rosetta", command=lambda: self.apply_rosetta(self.indigenous_var.get()))
         self.rb.pack()
+
+        self.sb = Button(master, text="Suppliment From Another Civ", command=self.supplement)
+        self.sb.pack()
 
         self.b = Button(master, text="Open Map", command=self.show_map)
         self.b.pack()
@@ -259,3 +263,56 @@ class MainWindow(object):
         w = MessageWindow(self.master, "Added {} New City Mappings!".format(n_changes))
         self.master.wait_window(w.top)
         self.set_all_states("normal")
+
+    def supplement(self):
+        self.set_all_states("disabled")
+        # First check we can
+        civilization = self.variable.get()
+        if civilization == "None":
+            # Tell the user to select a civ first
+            w = MessageWindow(self.master, "Please select a civilization to map to first.")
+        else:
+            # Launch supplement window
+            w = SupplementWindow(self.master, civilization, self.tile_dict)
+        # Wait on window then reset states
+        self.master.wait_window(w.top)
+        self.set_all_states("normal")
+        return None
+
+
+class SupplementWindow(object):
+    def __init__(self, master, civilization, tile_dict):
+        self.civilization = civilization
+        self.tile_dict = tile_dict
+
+        top = self.top = Toplevel(master)
+        self.l = Label(top, text="Select a civilization to supplement {} with names from:".format(civilization))
+        self.l.pack()
+        self.variable = StringVar(top)
+        self.variable.set(all_civs[0])
+        self.options = OptionMenu(top, self.variable, *all_civs)
+        self.options.pack()
+
+        self.b1 = Button(top, text='Ok', command=self.ok)
+        self.b1.pack()
+        self.b2 = Button(top, text='Cancel', command=self.cleanup)
+        self.b2.pack()
+
+    def ok(self):
+        # Get new civ
+        source_civ = self.variable.get()
+        # Loop tile dict and apply
+        count = 0
+        for x, column in self.tile_dict.items():
+            for y, tile in column.items():
+                count += tile.copy_mapping(source_civ, self.civilization)
+        # Done
+        self.cleanup(count)
+
+    def cleanup(self, count=None):
+        master = self.top.master
+        self.top.destroy()
+        if count is not None:
+            # Show user count
+            w = MessageWindow(master, "Successfully mapped {} names!".format(count))
+            master.wait_window(w.top)

@@ -158,3 +158,12 @@ class Tile:
         if civilization in self.areas:
             del self.areas[civilization]
         self.is_update[civilization] = True
+
+    def copy_mapping(self, civ1, civ2):
+        if (civ1 in self.names) and (civ2 not in self.names):
+            self.names[civ2] = self.names[civ1]
+            self.areas[civ2] = self.areas[civ1]
+            self.is_update[civ2] = True
+            return 1
+        else:
+            return 0
