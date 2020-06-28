@@ -141,6 +141,9 @@ class Tile:
             self.references[reference_type] = []
 
     def add_name(self, text, civilization="None", area=0, is_update=False):
+        # Clear leading & trailing whitespace
+        text = text.strip()
+        # Now add as normal
         self.names[civilization] = text
         self.areas[civilization] = area
         if civilization in self.is_update:
