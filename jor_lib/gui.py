@@ -195,6 +195,10 @@ class MainWindow(object):
     def save(self):
         self.set_all_states("disabled")
         dest = filedialog.asksaveasfile()
+        if (dest is None) or (dest == ""):
+            # Null, response, re-enable window
+            self.set_all_states("normal")
+            return None
         if not isinstance(dest, str):
             dest = dest.name
         save_map(dest, self.map_name, self.tile_dict, self.city_names,
