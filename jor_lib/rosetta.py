@@ -8,12 +8,14 @@ from collections import defaultdict
 ROSETTA_BUFFER = "_XSCX_"
 
 
-def load_rosetta(path):
+def load_rosetta(path, base_lookup=None, text_lookup=None):
     with open(path, "r", encoding="utf8") as file:
         rosetta_raw = xmltodict.parse(file.read())
 
-    base_lookup = defaultdict(lambda: list())
-    text_lookup = defaultdict(lambda: dict())
+    if base_lookup is None:
+        base_lookup = defaultdict(lambda: list())
+    if text_lookup is None:
+        text_lookup = defaultdict(lambda: dict())
 
     for row in rosetta_raw["GameData"]["LocalizedText"]["Replace"]:
         base_name, civilization = row["@Tag"].split(ROSETTA_BUFFER)
