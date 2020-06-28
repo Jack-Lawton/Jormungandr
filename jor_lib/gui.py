@@ -100,6 +100,7 @@ class MessageWindow(object):
 
 class MainWindow(object):
     def set_all_states(self, state):
+        self.c_ind["state"] = state
         self.rb["state"] = state
         self.b["state"] = state
         self.options["state"] = state
@@ -128,7 +129,11 @@ class MainWindow(object):
         self.options = OptionMenu(master, self.variable, *all_civs_plus_none)
         self.options.pack()
 
-        self.rb = Button(master, text="Apply Rosetta", command=self.apply_rosetta)
+        self.indigenous_var = BooleanVar()
+        self.c_ind = Checkbutton(master, text="Supplement Rosetta with Indigenous Names", variable=self.indigenous_var)
+        self.c_ind.pack()
+
+        self.rb = Button(master, text="Apply Rosetta", command=lambda: self.apply_rosetta(self.indigenous_var.get()))
         self.rb.pack()
 
         self.b = Button(master, text="Open Map", command=self.show_map)
@@ -196,7 +201,7 @@ class MainWindow(object):
         self.master.wait_window(w.top)
         self.set_all_states("normal")
 
-    def apply_rosetta(self):
+    def apply_rosetta(self, indigenous=False):
         self.set_all_states("disabled")
         civilization = self.variable.get()
         if civilization == "None":
@@ -207,16 +212,39 @@ class MainWindow(object):
                 # We have canceled out of the operation
                 self.set_all_states("normal")
                 return None
-        # Next load the file
+        # Find the path to rosetta
         if os.path.exists("Rosetta_Localization.xml"):
-            bl, tl = rosetta.load_rosetta("Rosetta_Localization.xml")
+            rosetta_path = "Rosetta_Localization.xml"
+            rosetta_dir = os.getcwd()
         else:
-            path = filedialog.askopenfilename(filetypes=[("XML files", "*.xml")])
-            if path == "":
+            rosetta_path = filedialog.askopenfilename(filetypes=[("XML files", "*.xml")])
+            if rosetta_path == "":
                 # Empty path, treat as cancellation
                 self.set_all_states("normal")
                 return None
-            bl, tl = rosetta.load_rosetta(path)
+            # Otherwise, set directory
+            rosetta_dir = "/".join(rosetta_path.split("/")[:-1])
+        # Find the indigenous file (if required)
+        if (not indigenous) or (civilization == "None"):
+            bl = None
+            tl = None
+        else:
+            possible_files = os.listdir(rosetta_dir)
+            indigenous_path = None
+            for file in possible_files:
+                if ("Indigenous" in file) and (file.lower()[-4:] == ".xml"):
+                    indigenous_path = rosetta_dir + "/" + file
+                    break
+            if indigenous_path is None:
+                # We have failed, quit
+                w = MessageWindow(self.master, "Failed to find valid indigenous file!")
+                self.master.wait_window(w.top)
+                self.set_all_states("normal")
+                return None
+            # Otherwise, load the indigenous file
+            bl, tl = rosetta.load_rosetta(indigenous_path, force_civ=civilization)
+        # Next load proper rosetta
+        bl, tl = rosetta.load_rosetta(rosetta_path, bl, tl)
         # Now apply
         n_changes = 0
         if civilization == "None":
