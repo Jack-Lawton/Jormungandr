@@ -16,7 +16,9 @@ Currently Jörmungandr immediately prompts the user to select a directory. The f
 
 Once launched, the user can select a civilization, then view and edit their city map. The default selection is "None", i.e. all civilizations.
 
-As of v0.4.0, the user can also select "Apply Rosetta", this will prompt the user to select the Localisation.xml from the [Rosetta](https://forums.civfanatics.com/threads/rosetta-dynamic-city-names.623102/) mod (alternatively, creating a file called Rosetta_Localization.xml will skip this check). Jörmungandr will then use the Rosetta database to create city mappings for the slected civilization for all cities where the generic ("None") mapping can be found in Rosetta.
+As of v0.4.0, the user can also select "Apply Rosetta", this will prompt the user to select the Localisation.xml from the [Rosetta](https://forums.civfanatics.com/threads/rosetta-dynamic-city-names.623102/) mod (alternatively, creating a file called Rosetta_Localization.xml will skip this check). Jörmungandr will then use the Rosetta database to create city mappings for the slected civilization for all cities where the generic ("None") mapping can be found in Rosetta. Additionally, the option to supliment Rosetta names with the indigenous names from IndigenousNames.xml can be enabled with the check box, IndigenousNames.xml needs to exist in the same folder as Localisation.xml.
+
+As of v0.5.0, the user can supliment civilization mappings with names from other civilizations. This can be handy for filling in large areas of the map quickly where civilizations have similar cultures / the same language.
 
 Before saving, on the main menu, two options are available:
 - Save updates only. This is designed to aid in collaboration, any new cities added in a session are coloured slightly differently, choosing to save only updates will save only these cities. The new files can then be merged or re-used however is required.
@@ -27,8 +29,6 @@ Jörmungandr does not aim to save completed functioning mods, rather simply City
 # Known Bugs
 - Exe build can be slow to load (recommended to run the python direct where possible)
 - City names do not initially render when using the magnifying glass zoom function (scroll zoom works fine)
-
-(In short, matplotlib was definitely not designed for the kind of dynamic graphical heavy lifting I am using it for)
 
 # Planned Features
 - Join circles for adjacent tiles with the same city name.
