@@ -19,6 +19,7 @@ def read_map_lua(path):
     python_map_commands = [s.replace("{", "[")
                                .replace("}", "]")
                                .replace("MapToConvert", "map_dict")
+                               .split("--")[0]
                            for s in lua_map_commands]
 
     # Define our map
