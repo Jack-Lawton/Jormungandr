@@ -33,3 +33,5 @@ Jörmungandr does not aim to save completed functioning mods, rather simply City
 # Planned Features
 - Join circles for adjacent tiles with the same city name.
 - Improve user interface.
+- Better highlight tiles with no name assigned.
+- Ability to save from map window (currently the save button only saves an image).
