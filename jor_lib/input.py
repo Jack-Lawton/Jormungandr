@@ -58,6 +58,28 @@ def read_city_names(game_play_text, city_names=None):
     return city_names
 
 
+def add_city_details(city_details, city_names, tile_dict):
+    if "@Civilization" in city_details:
+        civilization = city_details["@Civilization"]
+    else:
+        civilization = "None"
+    x = int(city_details["@X"])
+    y = int(city_details["@Y"])
+    if (x in tile_dict) and (y in tile_dict[x]):
+        if city_details["@CityLocaleName"] not in city_names:
+            print("Warning, could not find {}".format(city_details["@CityLocaleName"]))
+            return False
+        text = city_names[city_details["@CityLocaleName"]]
+        if "@Area" in city_details:
+            area = int(city_details["@Area"])
+        else:
+            # One is the default area where none is provided
+            area = 1
+        tile_dict[x][y].add_name(text, civilization, area)
+        return True
+    return False
+
+
 def read_city_details(city_map, city_names, tile_dict):
     if isinstance(city_map["GameData"]["CityMap"], list):
         parts = city_map["GameData"]["CityMap"]
@@ -65,24 +87,14 @@ def read_city_details(city_map, city_names, tile_dict):
         parts = [city_map["GameData"]["CityMap"]]
     for part in parts:
         if "Replace" in part:
-            for city_details in part["Replace"]:
-                if "@Civilization" in city_details:
-                    civilization = city_details["@Civilization"]
-                else:
-                    civilization = "None"
-                x = int(city_details["@X"])
-                y = int(city_details["@Y"])
-                if (x in tile_dict) and (y in tile_dict[x]):
-                    if city_details["@CityLocaleName"] not in city_names:
-                        print("Warning, could not find {}".format(city_details["@CityLocaleName"]))
-                        continue
-                    text = city_names[city_details["@CityLocaleName"]]
-                    if "@Area" in city_details:
-                        area = int(city_details["@Area"])
-                    else:
-                        # One is the default area where none is provided
-                        area = 1
-                    tile_dict[x][y].add_name(text, civilization, area)
+            if isinstance(part["Replace"], list):
+                # Add each city in the file
+                for city_details in part["Replace"]:
+                    add_city_details(city_details, city_names, tile_dict)
+            else:
+                # If part["Replace"] is not a list, there is only a single city to add
+                add_city_details(part["Replace"], city_names, tile_dict)
+    # Done
     return tile_dict
 
 
